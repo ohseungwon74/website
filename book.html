@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookshelf</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #fcfcfc;
+            color: #333;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .header h1 {
+            font-size: 2em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #7f8c8d;
+            font-size: 1em;
+        }
+        
+        /* 책들이 나열되는 그리드 설정 (나중에 책이 늘어나면 자동으로 정렬됨) */
+        .book-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* 모바일에서는 한 줄 */
+            gap: 40px;
+        }
+        @min-width: 768px {
+            .book-grid {
+                grid-template-columns: repeat(2, 1fr); /* PC에서는 두 줄로 배치 */
+            }
+        }
+
+        /* 개별 책 카드 디자인 */
+        .book-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .book-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* 책 표지 이미지 스타일 (현재는 임시로 연출) */
+        .book-cover {
+            width: 160px;
+            height: 230px;
+            background-color: #e0e0e0;
+            box-shadow: 3px 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            color: #666;
+            object-fit: cover;
+        }
+
+        .book-title {
+            font-size: 1.25em;
+            font-weight: bold;
+            margin: 10px 0 5px 0;
+            color: #2c3e50;
+        }
+        .book-author {
+            font-size: 0.9em;
+            color: #95a5a6;
+            margin-bottom: 15px;
+        }
+        .book-description {
+            font-size: 0.95em;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            word-break: keep-all;
+        }
+        .btn-buy {
+            display: inline-block;
+            background-color: #8d6e63;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .btn-buy:hover {
+            background-color: #5d4037;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 50px;
+            color: #7f8c8d;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>My Bookshelf</h1>
+        <p>기록하고 그린 이야기들을 책으로 전합니다.</p>
+    </div>
+
+    <div class="book-grid">
+        <div class="book-card">
+            <div class="book-cover">
+                <span>[표지 이미지 자리]</span>
+                </div>
+            <div class="book-title">여울이 성장일기 (작은 기적들의 순간)</div>
+            <div class="book-author">오승원 저</div>
+            <div class="book-description">
+                딸 아이의 소중한 성장 과정과 일상의 따뜻한 순간들을 글과 그림으로 정성스럽게 담아낸 그림일기 에세이입니다.
+            </div>
+            <a href="https://bookk.co.kr/bookStore/69dda8860192a45e33d1bd29" target="_blank" class="btn-buy">부크크에서 보기</a>
+        </div>
+
+        <div class="book-card" style="opacity: 0.6;">
+            <div class="book-cover" style="background-color: #f0f0f0; box-shadow: none; border: 2px dashed #ccc;">
+                <span>Coming Soon</span>
+            </div>
+            <div class="book-title">차기작 (준비 중)</div>
+            <div class="book-author">오승원 저</div>
+            <div class="book-description">
+                새로운 주제의 그림일기 및 여행 기록을 열심히 준비하고 있습니다. 올해 말 출판 예정입니다.
+            </div>
+            <a href="#" class="btn-buy" style="background-color: #bdc3c7; cursor: default;" onclick="return false;">준비 중</a>
+        </div>
+        
+        </div>
+
+    <a href="index.html" class="back-link">← 메인 화면으로 돌아가기</a>
+</div>
+
+</body>
+</html>
