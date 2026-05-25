@@ -3,69 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Portfolio</title>
+    <title>Seung-Won Oh | Space</title>
     <style>
         body {
-            font-family: sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: #f8f9fa;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4ecf7 100%);
             margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
         .container {
             text-align: center;
-            max-width: 400px;
+            max-width: 600px;
             width: 100%;
-            padding: 20px;
-        }
-        .profile-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background-color: #eee;
-            margin-bottom: 20px;
         }
         h1 {
-            font-size: 24px;
-            color: #333;
-            margin-bottom: 30px;
+            font-size: 2.2em;
+            color: #2c3e50;
+            margin-bottom: 35px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
         }
         .link-card {
             display: block;
-            background-color: #ffffff;
-            color: #333;
+            position: relative;
+            width: 100%;
+            height: 180px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            overflow: hidden;
             text-decoration: none;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
-            font-weight: bold;
+            color: #fff;
+            box-shadow: 0 10px 25px rgba(44, 62, 80, 0.12);
+            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.35s cubic-bezier(0.25, 1, 0.5, 1);
         }
         .link-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-            background-color: #f1f3f5;
+            transform: translateY(-6px);
+            box-shadow: 0 16px 35px rgba(44, 62, 80, 0.22);
+        }
+
+        /* 각 카드별 배경 설정 */
+        #card-instagram {
+            background-image: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+        }
+        #card-lab {
+            background-image: linear-gradient(135deg, #1f4068 0%, #162447 100%);
+        }
+        #card-book {
+            background-image: linear-gradient(135deg, #8d6e63 0%, #4e342e 100%);
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .link-card:hover .overlay {
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .icon {
+            font-size: 2.5em;
+            margin-bottom: 8px;
+        }
+        .title {
+            font-size: 1.6em;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+        .subtitle {
+            font-size: 0.95em;
+            margin: 6px 0 0 0;
+            opacity: 0.85;
+            font-weight: 300;
+            word-break: keep-all;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Welcome to My Space</h1>
+    <h1>Seung-Won Oh</h1>
 
-    <a href="https://www.instagram.com/자신의아이디" target="_blank" class="link-card">
-        📸 개인 Instagram 바로가기
+    <a href="https://www.instagram.com/oh.seungwon" target="_blank" class="link-card" id="card-instagram">
+        <div class="overlay">
+            <span class="icon">📸</span>
+            <p class="title">Instagram</p>
+            <p class="subtitle">@oh.seungwon 일상 및 그림 기록</p>
+        </div>
     </a>
     
-    <a href="https://연구실홈페이지주소" target="_blank" class="link-card">
-        🔬 연구실 홈페이지 바로가기
+    <a href="https://sites.google.com/view/lcphotonicslab" target="_blank" class="link-card" id="card-lab">
+        <div class="overlay">
+            <span class="icon">🔬</span>
+            <p class="title">Research Lab</p>
+            <p class="subtitle">Liquid Crystals & Photonics Laboratory</p>
+        </div>
     </a>
     
-    <a href="https://출판서적링크(또는 내부페이지)" target="_blank" class="link-card">
-        📚 출판 서적 소개
+    <a href="book.html" class="link-card" id="card-book">
+        <div class="overlay">
+            <span class="icon">📚</span>
+            <p class="title">Books</p>
+            <p class="subtitle">독립출판 및 저서 소개</p>
+        </div>
     </a>
 </div>
 
