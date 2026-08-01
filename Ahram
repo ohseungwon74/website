@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Practice App</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            background-color: #f7f9fc; 
+            color: #2c3e50; 
+            margin: 0; 
+            padding: 20px 10px; 
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+        }
+        .header h1 {
+            font-size: 1.5rem;
+            margin: 0 0 5px 0;
+            color: #34495e;
+        }
+        .header p {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin: 0;
+        }
+        .score-board {
+            text-align: right;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            color: #2980b9;
+            font-weight: 600;
+        }
+        .question-card { 
+            background: #ffffff; 
+            padding: 25px 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            margin-bottom: 25px; 
+            transition: transform 0.2s ease;
+        }
+        .question-text { 
+            font-size: 1.1rem; 
+            line-height: 1.5;
+            margin-bottom: 20px; 
+            color: #2c3e50;
+        }
+        .options { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+        }
+        .option-btn { 
+            padding: 14px 18px; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 8px; 
+            background: #f8fafc; 
+            text-align: left; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            color: #4a5568;
+            transition: all 0.2s ease; 
+        }
+        .option-btn:hover:not(:disabled) { 
+            background: #edf2f7; 
+            border-color: #cbd5e0;
+        }
+        .option-btn.correct { 
+            background: #f0fff4; 
+            border-color: #9ae6b4; 
+            color: #276749; 
+        }
+        .option-btn.incorrect { 
+            background: #fff5f5; 
+            border-color: #feb2b2; 
+            color: #9b2c2c; 
+        }
+        .option-btn:disabled { 
+            cursor: default; 
+        }
+        .explanation { 
+            margin-top: 20px; 
+            padding: 15px; 
+            background: #ebf4ff; 
+            border-left: 4px solid #3182ce;
+            border-radius: 4px; 
+            display: none; 
+            font-size: 0.95rem; 
+            line-height: 1.5;
+            color: #2b6cb0; 
+            animation: fadeIn 0.4s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .refresh-btn { 
+            display: block; 
+            width: 100%; 
+            padding: 16px; 
+            background: #3182ce; 
+            color: #ffffff; 
+            border: none; 
+            border-radius: 10px; 
+            font-size: 1.1rem; 
+            font-weight: 600;
+            cursor: pointer; 
+            margin-top: 30px; 
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px rgba(49, 130, 206, 0.3);
+            transition: background 0.2s ease;
+        }
+        .refresh-btn:hover { 
+            background: #2b6cb0; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>문법 실전 연습</h1>
+            <p>교재 기반 핵심 문법 랜덤 10제</p>
+        </div>
+        <div class="score-board" id="score-board">진행률: 0 / 10</div>
+        <div id="quiz-container"></div>
+        <button class="refresh-btn" onclick="loadNewQuestions()">새로운 문제 풀기 (랜덤 생성)</button>
+    </div>
+    
+    <script>
+        const allQuestions = [
+            { q: "The convention center, _______ many international academic forums are held, is located downtown.", options: ["which", "where", "that", "of which"], answer: 1, explanation: "문맥상 장소 선행사 convention center를 받는 관계부사가 필요합니다." },
+            { q: "Each of the new educational programs _______ carefully designed to meet the students' specific needs.", options: ["are", "is", "have been", "were"], answer: 1, explanation: "주어의 핵심인 Each에 맞춰 단수 동사를 써야 합니다." },
+            { q: "It is imperative that all application forms _______ submitted to the committee before the deadline.", options: ["will be", "must be", "are", "be"], answer: 3, explanation: "객관적 당위성을 갖는 내용의 that절에서 should를 생략하고 동사원형을 씁니다." },
+            { q: "The more complex the scientific theory is, _______ to explain its principles to the general public.", options: ["it is harder", "the harder it is", "the hard it is", "harder it is"], answer: 1, explanation: "이중비교 문장이므로 the 비교급 주어+동사 형태를 써야 합니다." },
+            { q: "The revised policy is designed not only to reduce manufacturing costs _______ improve overall workplace efficiency.", options: ["but also to", "but also", "and to", "so that"], answer: 0, explanation: "상관접속사를 사용할 때 문법적으로 같은 구조를 가진 표현을 병렬해야 하므로 to부정사가 와야 합니다." },
+            { q: "Researchers in the laboratory are currently investigating how _______ the growth of specific aquatic bacteria.", options: ["do environmental factors affect", "environmental factors affect", "affect environmental factors", "environmental factors affecting"], answer: 1, explanation: "명사절은 의문사 + 주어 + 동사 어순으로 써야 합니다." },
+            { q: "Although _______ in North America, this resilient species of bird can now be found globally.", options: ["originally discovering", "was originally discovered", "originally discovered", "it originally discovering"], answer: 2, explanation: "문맥상 주어와 수동관계이므로 과거분사를 사용한 축약된 부사절 형태를 써야 합니다." },
+            { q: "The composite materials used for the suspension bridge must be _______ withstand extreme weather conditions.", options: ["strength enough to", "strong enough to", "enough strong to", "too strong to"], answer: 1, explanation: "be동사 뒤에 형용사 enough to부정사 어순이 와야 합니다." },
+            { q: "Since the new corporate management team took over, the company's annual profits _______ significantly.", options: ["increased", "increase", "have increased", "are increasing"], answer: 2, explanation: "Since 표현에 맞춰 현재완료 시제를 써야 합니다." },
+            { q: "The historical archive contains thousands of rare manuscripts, some _______ date back to the early 15th century.", options: ["of them", "which", "of which", "that"], answer: 2, explanation: "선행사 rare manuscripts를 받아 some 뒤에 연결될 수 있는 형태인 of which가 맞는 표현입니다." },
+            { q: "No one knows what color dinosaurs were _______ no sample of their skin has survived.", options: ["because", "because of", "because that", "it is because"], answer: 0, explanation: "빈칸 뒤에 주어+동사의 완전한 절이 이어지므로 접속사 because를 써야 합니다." },
+            { q: "Neither Carl nor his colleagues _______ to the reception.", options: ["is inviting", "is invited", "were invited", "invited"], answer: 2, explanation: "B에 해당하는 his colleagues에 맞춰 복수 동사, 문맥상 수동태이므로 were invited가 정답입니다." },
+            { q: "Some islands of North Carolina are melting away at a rate of two to five feet _______ year.", options: ["a", "an", "the", "no article"], answer: 0, explanation: "year는 자음 발음으로 시작하므로 부정관사 a를 써야 합니다." },
+            { q: "The two types of nucleic acids, known as DNA and RNA, are not _______.", options: ["like", "alike", "likely", "liking"], answer: 1, explanation: "be 동사 뒤에 서술적 용법의 형용사 alike를 써야 합니다." },
+            { q: "Wool is _______ characteristic on which to classify breeds of sheep.", options: ["most obviously", "obviously the most", "the most obvious", "the most obvious that is"], answer: 2, explanation: "최상급 형용사 the most obvious + 명사 어순입니다." },
+            { q: "According to a recent report, the _______ of sugar that Americans consume does not vary significantly.", options: ["number", "amount", "size", "quantity"], answer: 1, explanation: "셀 수 없는 명사 sugar에 맞춰 the amount of를 써야 합니다." },
+            { q: "_______ the dinosaurs became extinct is not known.", options: ["Which", "Since", "How", "Although"], answer: 2, explanation: "주어 자리에 명사절을 이끄는 의문사 How가 적합합니다." },
+            { q: "Pelicans have a long, straight bill with a flexible pouch _______ of skin on the underside.", options: ["makes", "made", "making", "make"], answer: 1, explanation: "명사를 수동의 의미로 꾸며주는 과거분사 made를 써야 합니다." },
+            { q: "Florida _______ the twenty-seventh state in the U.S on March 3, 1845.", options: ["becomes", "has become", "became", "had become"], answer: 2, explanation: "명백한 과거 시점이 나와 있으므로 과거시제를 써야 합니다." },
+            { q: "The tropical rain forest in Brazil is a habitat _______ the capuchin monkey is found.", options: ["which", "what", "where", "that"], answer: 2, explanation: "문맥상 장소 선행사를 받으며 뒷문장이 완전하므로 관계부사 where가 필요합니다." },
+            { q: "An adult human must take eight steps to go as far _______ a giraffe does in one stride.", options: ["as", "than", "to", "that"], answer: 0, explanation: "동등비교 as far as 형태입니다." },
+            { q: "If I were you, I _______ try to improve my language habits.", options: ["will", "would", "am going to", "can"], answer: 1, explanation: "If절의 과거시제(were)에 맞춰 주절에 조동사 과거형(would)을 써야 합니다." },
+            { q: "If the cities _______ better and cheaper transport, the traffic problem will get worse.", options: ["do not provide", "did not provide", "have not provided", "had not provided"], answer: 0, explanation: "주절의 시제가 미래(will get)이므로 조건의 부사절에는 현재시제를 씁니다." },
+            { q: "Mineral prospectors use their knowledge of geophysics to locate deposits of oil, uranium, and _______ valuable minerals.", options: ["another", "other", "any other", "the another"], answer: 1, explanation: "복수 명사(minerals) 앞에는 other를 써야 합니다." },
+            { q: "_______ his life, Eugene O'Neill was regarded as the foremost American dramatist.", options: ["While", "It was the time of", "During", "By the time of"], answer: 2, explanation: "특정 기간을 나타내는 명사구 앞에는 전치사 During을 사용합니다." },
+            { q: "The director said that _______ research has been done in that field yet.", options: ["few", "little", "many", "a few"], answer: 1, explanation: "셀 수 없는 명사 단수형 research 앞에는 little을 써야 합니다." },
+            { q: "As soon as _______ with an acid, salt, and sometimes water, is formed.", options: ["a base will react", "a base reacts", "a base is reacting", "the reaction of a base"], answer: 1, explanation: "시간 부사절(As soon as)에서는 현재 시제가 미래를 대신합니다." },
+            { q: "If an atom loses any of its electrons, _______ positively charged and can combine chemically with other atoms.", options: ["it has become", "it became", "it would become", "it becomes"], answer: 3, explanation: "일반적인 사실을 나타내는 조건문이므로 현재시제를 사용합니다." },
+            { q: "It costs about sixty dollars to have a tooth _______.", options: ["filling", "to fill", "filled", "fill"], answer: 2, explanation: "사역동사 have + 목적어 + 과거분사(수동 관계) 구문입니다." },
+            { q: "_______ Margaret Mead had several assistants during her long investigations of Samoa, the bulk of the research was done by her alone.", options: ["Because", "What", "Although", "That"], answer: 2, explanation: "문맥상 양보의 의미를 나타내는 접속사 Although가 적합합니다." }
+        ];
+
+        let answeredCount = 0;
+
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function loadNewQuestions() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            answeredCount = 0;
+            updateScoreBoard();
+
+            const selectedQuestions = shuffle([...allQuestions]).slice(0, 10);
+            
+            selectedQuestions.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                
+                const qText = document.createElement('div');
+                qText.className = 'question-text';
+                qText.innerHTML = `<strong>${index + 1}.</strong> ${q.q}`;
+                card.appendChild(qText);
+                
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+                
+                const expDiv = document.createElement('div');
+                expDiv.className = 'explanation';
+                expDiv.innerHTML = `해설: ${q.explanation}`;
+                
+                let isAnswered = false;
+
+                q.options.forEach((opt, oIndex) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.innerHTML = `(${String.fromCharCode(65 + oIndex)}) ${opt}`;
+                    
+                    btn.onclick = () => {
+                        if (isAnswered) return;
+                        isAnswered = true;
+                        
+                        const buttons = optionsDiv.querySelectorAll('.option-btn');
+                        buttons.forEach(b => b.disabled = true);
+                        
+                        if (oIndex === q.answer) {
+                            btn.classList.add('correct');
+                        } else {
+                            btn.classList.add('incorrect');
+                            buttons[q.answer].classList.add('correct');
+                        }
+                        
+                        expDiv.style.display = 'block';
+                        answeredCount++;
+                        updateScoreBoard();
+                    };
+                    optionsDiv.appendChild(btn);
+                });
+                
+                card.appendChild(optionsDiv);
+                card.appendChild(expDiv);
+                container.appendChild(card);
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function updateScoreBoard() {
+            document.getElementById('score-board').textContent = `진행률: ${answeredCount} / 10`;
+        }
+
+        window.onload = loadNewQuestions;
+    </script>
+</body>
+</html>
