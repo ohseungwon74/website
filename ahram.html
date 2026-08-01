@@ -1,40 +1,162 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grammar Practice App</title>
-    <style>
-        * { box-sizing: border-box; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
-            background-color: #f7f9fc; 
-            color: #2c3e50; 
-            margin: 0; 
-            padding: 20px 10px; 
-        }
-        .container { 
-            max-width: 600px; 
-            margin: 0 auto; 
-        }
-        .header { 
-            text-align: center; 
-            margin-bottom: 30px; 
-        }
-        .header h1 {
-            font-size: 1.5rem;
-            margin: 0 0 5px 0;
-            color: #34495e;
-        }
-        .header p {
-            font-size: 0.9rem;
-            color: #7f8c8d;
-            margin: 0;
-        }
-        .score-board {
-            text-align: right;
-            margin-bottom: 15px;
-            font-size: 1rem;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>고급 영문법 실전 트레이닝</title>
+<style>
+:root {
+--primary: #4f46e5;
+--secondary: #6366f1;
+--bg: #f8fafc;
+--card: #ffffff;
+--text: #1e293b;
+--correct: #10b981;
+--incorrect: #ef4444;
+}
+* { box-sizing: border-box; font-family: 'Pretendard', sans-serif; }
+body { background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; }
+.container { max-width: 700px; width: 100%; }
+.header { text-align: center; margin-bottom: 30px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.header h1 { margin: 0; font-size: 1.5rem; color: var(--primary); }
+.status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: 600; padding: 0 10px; }
+​.quiz-card { background: var(--card); border-radius: 15px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+.q-header { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 0.9rem; color: #64748b; }
+.q-type { background: #e0e7ff; color: #4338ca; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+.question-text { font-size: 1.15rem; line-height: 1.6; margin-bottom: 20px; }
+.question-text u { text-decoration: underline; text-underline-offset: 4px; font-weight: 600; }
+​.options { display: grid; gap: 10px; }
+.opt-btn { background: #f1f5f9; border: 2px solid transparent; padding: 15px; border-radius: 10px; text-align: left; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+.opt-btn:hover:not(:disabled) { background: #e2e8f0; border-color: #cbd5e0; }
+.opt-btn.selected-correct { background: #d1fae5; border-color: var(--correct); color: #065f46; }
+.opt-btn.selected-incorrect { background: #fee2e2; border-color: var(--incorrect); color: #991b1b; }
+.opt-btn.correct-hint { background: #d1fae5; border-color: var(--correct); }
+​.explanation { margin-top: 20px; padding: 15px; background: #eff6ff; border-left: 4px solid var(--primary); border-radius: 4px; display: none; animation: slideDown 0.3s ease; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+​.refresh-area { text-align: center; padding: 40px 0; }
+.btn-main { background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); transition: 0.3s; }
+.btn-main:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.4); }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>📖 영문법 마스터 트레이닝</h1>
+<p>교재 및 실전 테스트 기반 문항</p>
+</div>
+<div class="status-bar" id="status-bar">
+<span>푼 문제: 0 / 10</span>
+<span id="score-text">점수: 0점</span>
+</div>
+<div id="quiz-wrapper"></div>
+<div class="refresh-area">
+<button class="btn-main" onclick="initQuiz()">새로운 문제 세트 풀기</button>
+</div>
+</div>
+​<script>
+const questionBank = [
+// [Structure 유형]
+{ type: "Structure", q: "Jackson, _______ of Mississippi, is the largest city in the state.", opts: ["is the capital", "the capital", "it is the capital", "that is the capital"], ans: 1, exp: "주어와 동사 사이의 삽입구(동격 명사구) 자리입니다. 'the capital'이 들어가 Jackson을 설명합니다." },
+{ type: "Structure", q: "It is the recommendation of the U.S. Public Health Service that all children _______ vaccinated.", opts: ["are", "be", "will be", "were"], ans: 1, exp: "recommendation과 같은 당위성을 나타내는 명사 뒤의 that절에는 '(should) + 동사원형'을 씁니다." },
+{ type: "Structure", q: "Although _______ do not have outer ears, they have a simple inner ear on either side of the head.", opts: ["there are varieties", "they are varieties", "some varieties", "which varieties"], ans: 2, exp: "Although 절의 주어가 필요한 자리입니다. varieties는 복수형이므로 some varieties가 주어로 적절합니다." },
+{ type: "Structure", q: "In 1774 delegates from all the colonies _______ Georgia attended the First Continental Congress.", opts: ["the exception was", "except Georgia", "excepting that Georgia was", "except"], ans: 1, exp: "전치사구 'except + 명사'가 적절합니다. 'Georgia를 제외한 모든 식민지'라는 의미입니다." },
+{ type: "Structure", q: "_______ through a telescope, Venus appears to go through changes in size and shape.", opts: ["It is seen", "Seeing", "When seen", "It has seen"], ans: 2, exp: "분사구문입니다. 금성이 '보여지는' 수동의 관계이므로 'When (it is) seen'이 적합합니다." },
+{ type: "Structure", q: "The various types of bacteria are classified according to _______ shaped.", opts: ["they are", "having", "how they are", "whose"], ans: 2, exp: "전치사 according to의 목적어로 의문사절(어떻게 모양이 형성되는지)이 필요합니다." },
+{ type: "Structure", q: "Beavers have been known to use logs to build dams that are more than a thousand .", opts: ["foot in length", "feet long", "long feet", "lengthy feet"], ans: 1, exp: "수치 표현 뒤에는 '단위 + 형용사(long)'의 어순을 사용합니다." },
+{ type: "Structure", q: " as the most important crop in Hawaii is sugar cane.", opts: ["It ranks", "It is ranked", "What ranks", "The rank"], ans: 2, exp: "전체 문장의 주어 역할을 하는 명사절이 필요합니다. '가장 중요한 작물로 꼽히는 것'의 의미인 What절이 적절합니다." },
+{ type: "Structure", q: "Under the educational plan, _______ unhappy with a particular school, they could move their children.", opts: ["if parents were", "when parents", "parents who were", "parents were"], ans: 0, exp: "조건의 부사절 'if 주어 + 동사'가 필요합니다. 주절에 could가 있으므로 가정법 과거 형태가 쓰였습니다." },
+{ type: "Structure", q: "Based on the premise that light was composed of color, the Impressionists concluded _______ not really black.", opts: ["which was that shadows", "was shadows which", "were shadows", "that shadows were"], ans: 3, exp: "conclude의 목적어로 명사절 접속사 that이 이끄는 절이 와야 합니다." },
+{ type: "Structure", q: "To be considered a parliamentary system, the prime minister must _______ on the basis of power distribution.", opts: ["be appointing", "be appointed", "appointing", "appointed"], ans: 1, exp: "총리는 '임명되는' 것이므로 수동태(be + p.p.)가 필요합니다." },
+{ type: "Structure", q: "_______ of the play Mourning Becomes Electra introduces the characters.", opts: ["The act first", "Act one", "Act first", "First act"], ans: 1, exp: "장/과를 나타낼 때는 '명사 + 숫자(Act one)' 또는 'the + 서수 + 명사'를 씁니다." },
+{ type: "Structure", q: "As soon as a base _______ with an acid, salt and water are formed.", opts: ["will react", "reacts", "is reacting", "the reaction"], ans: 1, exp: "시간의 부사절에서는 미래 대신 현재 시제를 사용합니다." },
+{ type: "Structure", q: "Not until a student has mastered algebra _______ the principles of geometry.", opts: ["he can begin to understand", "can he begin to understand", "he begins to understand", "begins to understand"], ans: 1, exp: "부정어구 'Not until...'이 문두에 오면 주어와 조동사가 도치됩니다." },
+​// [Written Expression 유형]
+{ type: "Written", q: "J. Edgar Hoover <u>has served</u> (A) as <u>director</u> (B) of the FBI <u>from</u> (C) 1924 <u>until</u> (D) his death in 1972.", opts: ["(A)", "(B)", "(C)", "(D)"], ans: 0, exp: "1972년에 끝난 과거의 사실이므로 현재완료(has served)가 아닌 과거시제(served)를 써야 합니다." },
+{ type: "Written", q: "Denver is <u>call</u> (A) the 'Mile High City' because it <u>is</u> (B) at an <u>altitude</u> (C) of 5,280 feet <u>above</u> (D) sea level.", opts: ["(A)", "(B)", "(C)", "(D)"], ans: 0, exp: "덴버는 불리는 것이므로 수동태인 'is called'가 되어야 합니다." },
+{ type: "Written", q: "A neutrino is a <u>subatomic</u> (A) particle <u>it has</u> (B) <u>no</u> (C) electrical <u>charge</u> (D).", opts: ["(A)", "(B)", "(C)", "(D)"], ans: 1, exp: "두 개의 절을 연결할 접속사가 없으므로 'it has'를 관계대명사 'that has' 또는 'having'으로 바꿔야 합니다." },
+{ type: "Written", q: "Together Rogers and Hammerstein <u>wrote</u> (A) nine <u>musicals</u> (B), the first <u>of whose</u> (C) was <u>Oklahoma</u> (D).", opts: ["(A)", "(B)", "(C)", "(D)"], ans: 2, exp: "선행사가 사물(musicals)이므로 'of which'로 써야 합니다." },
+{ type: "Written", q: "A dam <u>stops</u> (A) the flow of water, <u>creating</u> (B) a reservoir and <u>raise</u> (C) the <u>level</u> (D) of water.", opts: ["(A)", "(B)", "(C)", "(D)"], ans: 2, exp: "creating과 병렬 구조를 이루어야 하므로 raising이 되어야 합니다." },
+{ type: "Written", q: "The United States is the <u>world's</u> (A) largest cheese producer, <u>making</u> (B) more than two million <u>tons</u> (C) of cheese <u>annual</u> (D).", opts: ["(A)", "(B)", "(C)", "(D)"], ans: 3, exp: "동사 making을 수식하는 부사 annually가 필요합니다." },
+{ type: "Written", q: "Natural gas <u>is composed</u> (A) of molecules <u>that</u> (B) <u>breaks</u> (C) apart into hydrogen <u>when heated</u> (D).", opts: ["(A)", "(B)", "(C)", "(D)"], ans: 2, exp: "관계대명사 that의 선행사가 복수(molecules)이므로 동사는 break가 되어야 합니다." },
+{ type: "Written", q: "Interest in data processing <u>has grown</u> (A) <u>rapid</u> (B) since the first <u>calculators</u> (C) <u>were introduced</u> (D).", opts: ["(A)", "(B)", "(C)", "(D)"], ans: 1, exp: "동사 has grown을 수식하는 부사 rapidly가 필요합니다." },
+{ type: "Written", q: "<u>Despite of</u> (A) the increase in air fares, <u>most</u> (B) people <u>still</u> (C) prefer to <u>travel</u> (D) by plane.", opts: ["(A)", "(B)", "(C)", "(D)"], ans: 0, exp: "Despite는 전치사이므로 of를 붙이지 않습니다. (In spite of와 혼동 주의)" },
+{ type: "Written", q: "One of the most <u>influence</u> (A) <u>newspapers</u> (B) is The New York Times, <u>which</u> (C) is <u>widely</u> (D) distributed.", opts: ["(A)", "(B)", "(C)", "(D)"], ans: 0, exp: "명사 newspapers를 수식하는 형용사 influential이 필요합니다." },
+{ type: "Written", q: "It is <u>imperative</u> (A) that a graduate student <u>maintains</u> (B) a <u>grade</u> (C) in <u>his</u> (D) major field.", opts: ["(A)", "(B)", "(C)", "(D)"], ans: 1, exp: "imperative(당위성) 뒤의 that절에는 동사원형 maintain을 써야 합니다." },
+{ type: "Written", q: "A gas like propane <u>will</u> (A) <u>combination</u> (B) with water <u>in</u> (C) a <u>saline</u> (D) solution.", opts: ["(A)", "(B)", "(C)", "(D)"], ans: 1, exp: "조동사 will 뒤에는 동사원형 combine이 와야 합니다." },
+{ type: "Written", q: "Higher species of fish <u>have</u> (A) an <u>organ</u> (B) <u>is called</u> (C) a swim bladder <u>which</u> (D) allows depth regulation.", opts: ["(A)", "(B)", "(C)", "(D)"], ans: 2, exp: "이미 본동사(have)가 있으므로 'called' 또는 'which is called'가 되어야 합니다." },
+{ type: "Written", q: "American teams <u>are</u> (A) now <u>being</u> (B) challenged by <u>either</u> (C) Japanese teams <u>and</u> (D) Venezuelan teams.", opts: ["(A)", "(B)", "(C)", "(D)"], ans: 2, exp: "뒤에 and가 있으므로 either 대신 both를 써야 합니다." },
+{ type: "Written", q: "Miami <u>is</u> (A) among the few cities <u>where</u> (B) <u>have been</u> (C) awarded <u>official</u> (D) status.", opts: ["(A)", "(B)", "(C)", "(D)"], ans: 1, exp: "뒤에 주어가 없는 불완전한 문장이므로 관계부사 where가 아닌 주격 관계대명사 that/which가 와야 합니다." },
+{ type: "Written", q: "<u>Although</u> (A) <u>managing</u> (B) by an independent governor, the Bank <u>is owned</u> (C) by the <u>government</u> (D).", opts: ["(A)", "(B)", "(C)", "(D)"], ans: 1, exp: "은행은 관리되는 것이므로 수동의 분사구문 managed가 적절합니다." },
+​// [추가된 문법 요점 기반 문제]
+{ type: "Structure", q: "Pelicans have a long bill with a flexible pouch _______ of skin.", opts: ["makes", "made", "making", "make"], ans: 1, exp: "명사 pouch를 수동으로 수식하는 과거분사 made가 정답입니다." },
+{ type: "Structure", q: "Since the mid-1950s, the population of Canadian geese _______ greatly in North America.", opts: ["increased", "is increasing", "has increased", "increases"], ans: 2, exp: "Since 시점 표현에 따라 현재완료(has increased)를 씁니다." },
+{ type: "Structure", q: "Neither the manager nor the employees _______ to the conference last week.", opts: ["was invited", "were invited", "is invited", "are invited"], ans: 1, exp: "Neither A nor B는 B(employees)에 수 일치 시키며, last week이므로 과거 수동태를 씁니다." },
+{ type: "Structure", q: "The number of sugar that Americans consume _______ vary significantly.", opts: ["does not", "do not", "is not", "are not"], ans: 0, exp: "주어 'The number(양의 의미로 쓰인 단수)'에 맞춰 단수 동사 does not을 씁니다." },
+{ type: "Structure", q: "A bridge must be _______ to support the weight of heavy vehicles.", opts: ["strength enough", "strong enough", "enough strong", "enough strength"], ans: 1, exp: "형용사 + enough 어순이 올바릅니다." },
+{ type: "Structure", q: "The rings of Saturn are _______ distant to be seen from Earth without a telescope.", opts: ["so", "too", "very", "such"], ans: 1, exp: "뒤에 to-부정사가 있으므로 'too ~ to' 용법이 적절합니다." },
+{ type: "Structure", q: "The lower the level of lighting in a room, _______ our eyes focus.", opts: ["the more slowly", "more slowly", "it is more slow", "the slow"], ans: 0, exp: "the 비교급, the 비교급 구문입니다." },
+{ type: "Structure", q: "A neuron cell can not only receive messages, but it can also _______ messages.", opts: ["transmit", "transmitting", "transmitted", "transmits"], ans: 0, exp: "not only A but also B의 병렬 구조로 동사원형 transmit이 와야 합니다." },
+{ type: "Structure", q: "Mineral prospectors use geophysics to locate deposits of oil and _______ minerals.", opts: ["another", "others", "other", "any another"], ans: 2, exp: "복수 명사 minerals 앞에는 other를 씁니다." }
+];
+​let currentSet = [];
+let score = 0;
+let solvedCount = 0;
+​function initQuiz() {
+// 랜덤으로 10문제 추출
+const shuffled = [...questionBank].sort(() => 0.5 - Math.random());
+currentSet = shuffled.slice(0, 10);
+score = 0;
+solvedCount = 0;
+updateStatus();
+renderQuiz();
+window.scrollTo({top: 0, behavior: 'smooth'});
+}
+​function renderQuiz() {
+const wrapper = document.getElementById('quiz-wrapper');
+wrapper.innerHTML = '';
+​currentSet.forEach((item, index) => {
+const card = document.createElement('div');
+card.className = 'quiz-card';
+card.id = q-${index};
+​card.innerHTML = <div class="q-header"> <span>QUESTION ${index + 1}</span> <span class="q-type">${item.type}</span> </div> <div class="question-text">${item.q}</div> <div class="options" id="opts-${index}"> ${item.opts.map((opt, i) =>
+<button class="opt-btn" onclick="checkAnswer(${index},${i})">
+${item.type === "Written" ? opt : (${String.fromCharCode(65+i)}) ${opt}}
+</button>
+).join('')} </div> <div class="explanation" id="exp-${index}"> <strong>정답 해설:</strong><br>${item.exp} </div> ;
+wrapper.appendChild(card);
+});
+}
+​function checkAnswer(qIdx, optIdx) {
+const q = currentSet[qIdx];
+const optsDiv = document.getElementById(opts-${qIdx});
+const buttons = optsDiv.querySelectorAll('.opt-btn');
+const expDiv = document.getElementById(exp-${qIdx});
+​if (buttons[0].disabled) return; // 이미 푼 문제 방지
+​buttons.forEach((btn, i) => {
+btn.disabled = true;
+if (i === q.ans) {
+btn.classList.add('correct-hint');
+}
+});
+​if (optIdx === q.ans) {
+buttons[optIdx].classList.add('selected-correct');
+score += 10;
+} else {
+buttons[optIdx].classList.add('selected-incorrect');
+}
+​expDiv.style.display = 'block';
+solvedCount++;
+updateStatus();
+}
+​function updateStatus() {
+document.getElementById('status-bar').children[0].innerText = 푼 문제: ${solvedCount} / 10;
+document.getElementById('score-text').innerText = 점수: ${score}점;
+}
+​// 앱 시작
+window.onload = initQuiz;
+</script>
+</body>
+</html>            font-size: 1rem;
             color: #2980b9;
             font-weight: 600;
         }
