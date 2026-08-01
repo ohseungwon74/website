@@ -1,39 +1,291 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>고급 영문법 실전 트레이닝</title>
-<style>
-:root {
---primary: #4f46e5;
---secondary: #6366f1;
---bg: #f8fafc;
---card: #ffffff;
---text: #1e293b;
---correct: #10b981;
---incorrect: #ef4444;
-}
-* { box-sizing: border-box; font-family: 'Pretendard', sans-serif; }
-body { background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; }
-.container { max-width: 700px; width: 100%; }
-.header { text-align: center; margin-bottom: 30px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-.header h1 { margin: 0; font-size: 1.5rem; color: var(--primary); }
-.status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: 600; padding: 0 10px; }
-​.quiz-card { background: var(--card); border-radius: 15px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
-.q-header { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 0.9rem; color: #64748b; }
-.q-type { background: #e0e7ff; color: #4338ca; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
-.question-text { font-size: 1.15rem; line-height: 1.6; margin-bottom: 20px; }
-.question-text u { text-decoration: underline; text-underline-offset: 4px; font-weight: 600; }
-​.options { display: grid; gap: 10px; }
-.opt-btn { background: #f1f5f9; border: 2px solid transparent; padding: 15px; border-radius: 10px; text-align: left; cursor: pointer; transition: 0.2s; font-size: 1rem; }
-.opt-btn:hover:not(:disabled) { background: #e2e8f0; border-color: #cbd5e0; }
-.opt-btn.selected-correct { background: #d1fae5; border-color: var(--correct); color: #065f46; }
-.opt-btn.selected-incorrect { background: #fee2e2; border-color: var(--incorrect); color: #991b1b; }
-.opt-btn.correct-hint { background: #d1fae5; border-color: var(--correct); }
-​.explanation { margin-top: 20px; padding: 15px; background: #eff6ff; border-left: 4px solid var(--primary); border-radius: 4px; display: none; animation: slideDown 0.3s ease; }
-@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-​.refresh-area { text-align: center; padding: 40px 0; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Practice App (Full Version)</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            background-color: #f7f9fc; 
+            color: #2c3e50; 
+            margin: 0; 
+            padding: 20px 10px; 
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+        }
+        .header h1 {
+            font-size: 1.5rem;
+            margin: 0 0 5px 0;
+            color: #34495e;
+        }
+        .header p {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin: 0;
+        }
+        .score-board {
+            text-align: right;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            color: #2980b9;
+            font-weight: 600;
+        }
+        .question-card { 
+            background: #ffffff; 
+            padding: 25px 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            margin-bottom: 25px; 
+            transition: transform 0.2s ease;
+        }
+        .question-text { 
+            font-size: 1.1rem; 
+            line-height: 1.5;
+            margin-bottom: 20px; 
+            color: #2c3e50;
+        }
+        .question-text u {
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            color: #d35400;
+        }
+        .options { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+        }
+        .option-btn { 
+            padding: 14px 18px; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 8px; 
+            background: #f8fafc; 
+            text-align: left; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            color: #4a5568;
+            transition: all 0.2s ease; 
+        }
+        .option-btn:hover:not(:disabled) { 
+            background: #edf2f7; 
+            border-color: #cbd5e0;
+        }
+        .option-btn.correct { 
+            background: #f0fff4; 
+            border-color: #9ae6b4; 
+            color: #276749; 
+        }
+        .option-btn.incorrect { 
+            background: #fff5f5; 
+            border-color: #feb2b2; 
+            color: #9b2c2c; 
+        }
+        .option-btn:disabled { 
+            cursor: default; 
+        }
+        .explanation { 
+            margin-top: 20px; 
+            padding: 15px; 
+            background: #ebf4ff; 
+            border-left: 4px solid #3182ce;
+            border-radius: 4px; 
+            display: none; 
+            font-size: 0.95rem; 
+            line-height: 1.5;
+            color: #2b6cb0; 
+            animation: fadeIn 0.4s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .refresh-btn { 
+            display: block; 
+            width: 100%; 
+            padding: 16px; 
+            background: #3182ce; 
+            color: #ffffff; 
+            border: none; 
+            border-radius: 10px; 
+            font-size: 1.1rem; 
+            font-weight: 600;
+            cursor: pointer; 
+            margin-top: 30px; 
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px rgba(49, 130, 206, 0.3);
+            transition: background 0.2s ease;
+        }
+        .refresh-btn:hover { 
+            background: #2b6cb0; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>문법 실전 연습 (통합본)</h1>
+            <p>사진 5장 + PDF 2개 통합 문제 은행 (총 44문항 중 랜덤 10제)</p>
+        </div>
+        <div class="score-board" id="score-board">진행률: 0 / 10</div>
+        <div id="quiz-container"></div>
+        <button class="refresh-btn" onclick="loadNewQuestions()">새로운 10문제 풀기 (랜덤 생성)</button>
+    </div>
+    
+    <script>
+        const allQuestions = [
+            // Image 1 (Structure)
+            { q: "Jackson, _______ the largest city in the state.", options: ["the capital of Mississippi is", "is the capital of Mississippi", "which the capital of Mississippi", "the capital of Mississippi"], answer: 0, explanation: "문장의 주어 Jackson에 이어지는 동사가 필요하므로 is가 포함된 (A)가 정답입니다." },
+            { q: "Valley Forge National Park commemorates the time that Washington _______ in Valley Forge with his troops.", options: ["spend", "spent", "was spent", "has been spent"], answer: 1, explanation: "과거의 특정 시점을 나타내며 그가 시간을 보낸(능동) 것이므로 과거시제 spent가 적절합니다." },
+            { q: "In New England _______ picturesque fishing villages and manufacturing towns.", options: ["has", "many", "about", "there are"], answer: 3, explanation: "장소 부사구 뒤에 복수 주어(villages and towns)가 도치되어 이어지므로 유도부사구문 there are가 필요합니다." },
+            { q: "In 1774 delegates from all the colonies _______ attended the First Continental Congress.", options: ["Georgia", "the exception was Georgia", "except Georgia", "except that Georgia was"], answer: 2, explanation: "전치사구 except Georgia(~를 제외하고)가 문맥상 가장 적합합니다." },
+            { q: "It is the recommendation of the U.S. Public Health Service that all children _______ vaccinated against a variety of diseases.", options: ["are", "be", "will be", "were"], answer: 1, explanation: "recommendation 같은 당위성 명사 뒤의 that절에는 (should) 동사원형이 오므로 be가 정답입니다." },
+            { q: "Although fish do not have outer ears, _______ have a simple inner ear on either side of the head.", options: ["there are varieties", "they are varieties", "some varieties", "which varieties"], answer: 2, explanation: "주절의 주어가 될 수 있는 명사구 some varieties가 적절합니다." },
+            { q: "Jamestown, the first permanent English settlement in America, _______ in 1607.", options: ["it was founded", "colonists arrived there", "was established", "founded"], answer: 2, explanation: "문장의 주어 Jamestown에 연결되는 동사가 필요하며, 수동의 의미이므로 was established가 맞습니다." },
+
+            // Image 2 (Structure)
+            { q: "_______ through a telescope, Venus appears to go through changes in size and shape.", options: ["It is seen", "Seeing", "When seen", "It has seen"], answer: 2, explanation: "주절의 주어(Venus)와 수동 관계이므로 접속사+과거분사 형태인 When seen이 적절합니다." },
+            { q: "The various types of bacteria are classified according to _______.", options: ["they are shaped", "having shape", "how they are shaped", "whose shaped"], answer: 2, explanation: "전치사 according to 뒤에 명사절이 와야 하므로 의문사+주어+동사 어순의 how they are shaped가 맞습니다." },
+            { q: "Beavers have been known to use logs, branches, rocks, and mud to build dams that are more than a thousand _______.", options: ["foot in length", "feet long", "long feet", "lengthy feet"], answer: 1, explanation: "수사 + 복수명사단위 + 형용사 어순이므로 feet long이 정답입니다." },
+            { q: "From the stone tools and animal remains _______ with human fossils, anthropologists have determined that Neanderthal Man was a successful hunter.", options: ["find", "were found", "finding", "found"], answer: 3, explanation: "명사 remains를 수동의 의미로 수식하는 과거분사 found가 와야 합니다." },
+            { q: "_______ as the most important crop in Hawaii is sugar cane.", options: ["It ranks", "It is ranked", "What ranks", "The rank"], answer: 2, explanation: "문장 전체의 주어 역할을 하는 명사절을 이끄는 관계대명사 What(~하는 것)이 필요합니다." },
+            { q: "Under the educational plan proposed by the school board of Rocklyn County, _______ unhappy with a particular school, they could simply move their children to another.", options: ["if parents were", "when parents", "parents who were", "parents were"], answer: 0, explanation: "뒤에 주절(they could simply move)이 있으므로 부사절을 이끄는 접속사와 주어 동사(if parents were)가 필요합니다." },
+            { q: "In the U.S. more than 60 percent of all high school students who _______ continue their education.", options: ["do not", "graduate", "will", "can"], answer: 1, explanation: "관계대명사 who 절 안의 동사 자리에 올 수 있으며 문맥상 졸업하는 학생들을 뜻하는 graduate가 적절합니다." },
+
+            // Image 3 (Written Expression)
+            { q: "다음 밑줄 친 부분 중 어법상 틀린 것을 고르시오.<br><br>J. Edgar Hoover (A)<u>has served</u> as (B)<u>director</u> of the FBI (C)<u>from</u> 1924 until (D)<u>his death</u> in 1972.", options: ["has served", "director", "from", "his death"], answer: 0, explanation: "1924년부터 1972년까지 과거의 명백한 기간이므로 현재완료가 아닌 과거시제(served)를 써야 합니다." },
+            { q: "다음 밑줄 친 부분 중 어법상 틀린 것을 고르시오.<br><br>Denver is (A)<u>call</u> the 'Mile High City' because it (B)<u>is at</u> (C)<u>an altitude</u> of 5,280 (D)<u>feet</u>, or 1 mile, above sea level.", options: ["call", "is at", "an altitude", "feet"], answer: 0, explanation: "수동태 문장이 되어야 하므로 call은 called로 바뀌어야 합니다." },
+            { q: "다음 밑줄 친 부분 중 어법상 틀린 것을 고르시오.<br><br>A neutrino is a (A)<u>subatomic</u> particle (B)<u>it has</u> (C)<u>no</u> electrical (D)<u>charge</u>.", options: ["subatomic", "it has", "no", "charge"], answer: 1, explanation: "문장을 연결하는 관계대명사가 필요하므로 it has를 that has 또는 분사형 having으로 고쳐야 합니다." },
+            { q: "다음 밑줄 친 부분 중 어법상 틀린 것을 고르시오.<br><br>While the Sun is (A)<u>the major</u> source of ultraviolet rays, it (B)<u>is not</u> the (C)<u>source</u> (D)<u>only</u>.", options: ["the major", "is not", "source", "only"], answer: 3, explanation: "only는 명사 source를 앞에서 수식해야 하므로 the only source가 되어야 합니다." },
+            { q: "다음 밑줄 친 부분 중 어법상 틀린 것을 고르시오.<br><br>Gamma globulin, a protein (A)<u>found in</u> blood plasma, (B)<u>is used</u> to prevent such infectious diseases (C)<u>for</u> measles and viral (D)<u>hepatitis</u>.", options: ["found in", "is used", "for", "hepatitis"], answer: 2, explanation: "예시를 나타내는 표현은 such A as B 구문이므로 for를 as로 고쳐야 합니다." },
+            { q: "다음 밑줄 친 부분 중 어법상 틀린 것을 고르시오.<br><br>Together (A)<u>Rogers and Hammerstein</u> wrote nine (B)<u>musicals</u>, the first of (C)<u>whose</u> was (D)<u>Oklahoma</u>.", options: ["Rogers and Hammerstein", "musicals", "whose", "Oklahoma"], answer: 2, explanation: "선행사가 사물(musicals)이므로 the first of which로 써야 합니다." },
+            { q: "다음 밑줄 친 부분 중 어법상 틀린 것을 고르시오.<br><br>A dam (A)<u>stops</u> the (B)<u>flow</u> of water, creating a reservoir and (C)<u>raise</u> the (D)<u>level</u> of water.", options: ["stops", "flow", "raise", "level"], answer: 2, explanation: "creating과 병렬구조를 이루어야 하므로 raising으로 고쳐야 합니다." },
+            { q: "다음 밑줄 친 부분 중 어법상 틀린 것을 고르시오.<br><br>(A)<u>Authors</u> Samuel Morison won two Pulitzer Prizes, (B)<u>one</u> in 1943 for a biography of Columbus and (C)<u>the other</u> in 1960 for a biography of (D)<u>John Paul Jones</u>.", options: ["Authors", "one", "the other", "John Paul Jones"], answer: 0, explanation: "주어 Samuel Morison은 한 사람이므로 단수형 Author로 써야 합니다." },
+            { q: "다음 밑줄 친 부분 중 어법상 틀린 것을 고르시오.<br><br>The United States is the (A)<u>world's</u> largest cheese producer, (B)<u>making</u> more than two million (C)<u>tons</u> of cheese (D)<u>annual</u>.", options: ["world's", "making", "tons", "annual"], answer: 3, explanation: "부사 자리이므로 annual을 annually로 고쳐야 합니다." },
+
+            // Image 4 (Written Expression)
+            { q: "다음 밑줄 친 부분 중 어법상 틀린 것을 고르시오.<br><br>According to the 1978 Bakke decision by the Supreme Court, (A)<u>an</u> university may not (B)<u>use</u> admissions (C)<u>quotas</u> to obtain a (D)<u>racially</u> balanced student body.", options: ["an", "use", "quotas", "racially"], answer: 0, explanation: "university는 발음이 자음 [j]로 시작하므로 부정관사 a를 써야 합니다." },
+            { q: "다음 밑줄 친 부분 중 어법상 틀린 것을 고르시오.<br><br>Unlike light from other sources, (A)<u>which</u> travels in all (B)<u>direction</u>, the light from a laser is (C)<u>highly</u> (D)<u>directional</u>.", options: ["which", "direction", "highly", "directional"], answer: 1, explanation: "all 뒤에는 복수 명사가 와야 하므로 directions로 써야 합니다." },
+            { q: "다음 밑줄 친 부분 중 어법상 틀린 것을 고르시오.<br><br>Natural gas is (A)<u>composed of</u> hydrocarbon molecules (B)<u>that</u> (C)<u>breaks apart</u> into hydrogen and carbon atoms (D)<u>when heated</u>.", options: ["composed of", "that", "breaks apart", "when heated"], answer: 2, explanation: "관계대명사 that의 선행사가 복수명사 molecules이므로 동사는 수일치하여 break apart가 되어야 합니다." },
+            { q: "다음 밑줄 친 부분 중 어법상 틀린 것을 고르시오.<br><br>Diamonds (A)<u>are evaluated</u> on the (B)<u>basis</u> of their (C)<u>weigh</u>, purity, and (D)<u>color</u>.", options: ["are evaluated", "basis", "weigh", "color"], answer: 2, explanation: "명사 병렬 구조(purity, color)에 맞춰 동사 weigh 대신 명사 weight를 써야 합니다." },
+            { q: "다음 밑줄 친 부분 중 어법상 틀린 것을 고르시오.<br><br>Ships are able to (A)<u>move through</u> canals by (B)<u>means</u> locks, (C)<u>rectangular</u> areas with (D)<u>variable</u> water levels.", options: ["move through", "means", "rectangular", "variable"], answer: 1, explanation: "‘~을 수단으로 하여’라는 전치사구는 by means of 입니다." },
+
+            // Image 5 (Practice Test 2)
+            { q: "Overexposure to the sun causes _______ health problems.", options: ["various", "among", "but", "of"], answer: 0, explanation: "명사 health problems를 수식하는 형용사 various가 적절합니다." },
+            { q: "Birds head south to warmer climates when _______.", options: ["is cold weather", "does cold weather come", "cold weather comes", "comes cold weather"], answer: 2, explanation: "접속사 when 뒤에는 주어+동사 정상 어순이 와야 합니다." },
+            { q: "The city council is empowered not only to enact new laws, _______ select a new mayor between elections should the need arise.", options: ["and to", "but also to", "and", "so that"], answer: 1, explanation: "not only A but also B 상관접속사 구문으로 to부정사 병렬을 이룹니다." },
+            { q: "Drying of meats and vegetables is no longer considered one of _______ of preserving food.", options: ["the ways are useful", "useful way", "the most useful ways", "most are useful ways"], answer: 2, explanation: "one of the 최상급 복수명사 구문이므로 the most useful ways가 정답입니다." },
+            { q: "A giant kind of grass, bamboo may reach a height of 120 feet and _______.", options: ["a diameter of 1 foot", "its diameter is 1 foot", "there is a diameter of 1 foot", "which is a diameter of 1 foot"], answer: 0, explanation: "reach 동사의 목적어로 a height... 와 병렬되는 명사구 a diameter...가 와야 합니다." },
+            { q: "Somerset Maugham, a novelist, _______ about a restless man's quest for inner understanding in The Razor's Edge.", options: ["who wrote this", "who wrote", "when he wrote", "wrote"], answer: 3, explanation: "주어(Somerset Maugham)에 이어지는 본동사가 필요하므로 wrote가 정답입니다." },
+            { q: "Aspirin is used _______ a constriction of the blood vessels.", options: ["the counteraction", "to counteract", "counteract", "counteracting"], answer: 1, explanation: "be used to 동사원형(~하는 데 사용되다) 구문입니다." },
+            { q: "The nuthatch _______ six inches long.", options: ["grows seldom more than", "more than seldom grows", "seldom grows more than", "grows more than seldom"], answer: 2, explanation: "빈도부사 seldom은 일반동사 grows 앞에 위치해야 합니다." },
+
+            // PDF 2 (14회 practice test)
+            { q: "Based on the premise that light was composed of color, the Impressionists came to the conclusion _______ not really black.", options: ["which was that shadows", "was shadows which", "were shadows", "that shadows were"], answer: 3, explanation: "conclusion과 동격인 명사절을 이끄는 접속사 that + 주어 + 동사 어순이 필요합니다." },
+            { q: "To be considered a parliamentary system, the prime minister must _______ on the basis of the distribution of power in the parliament.", options: ["be appointing", "be appointed", "appointing", "appointed"], answer: 1, explanation: "수상(prime minister)이 임명되는(수동) 것이므로 조동사 뒤 수동태 be appointed를 써야 합니다." },
+            { q: "_______ of the play Mourning Becomes Electra introduces the cast of characters and hints at the plot.", options: ["The act first", "Act one", "Act first", "First act"], answer: 1, explanation: "명사+기수(Act one) 또는 the+서수+명사(the first act)로 표현합니다." },
+            { q: "As soon as _______ with an acid, salt, and sometimes water, is formed.", options: ["a base will react", "a base reacts", "a base is reacting", "the reaction of a base"], answer: 1, explanation: "시간 부사절(As soon as)에서는 현재 시제가 미래를 대신합니다." },
+            { q: "In Arlington National Cemetery _______ of brave soldiers who lost their lives in war.", options: ["are the graves", "the graves are", "which are the graves", "the graves"], answer: 0, explanation: "장소 부사구가 문두에 오면 주어와 동사가 도치됩니다(are the graves)." },
+            { q: "_______ in 1865, Chicago's Union Stock Yards was the largest meatpacking center until the mid-20th century.", options: ["Was established", "Establishing", "Established", "It was established"], answer: 2, explanation: "분사구문으로 주절의 주어와 수동관계이므로 과거분사(Established)로 시작합니다." },
+            { q: "To answer accurately is more important than _______.", options: ["a quick finish", "to finish quickly", "finishing quickly", "you finish quickly"], answer: 1, explanation: "비교 대상이 병렬구조를 이루어야 하므로 To answer에 맞춰 to finish를 씁니다." },
+            { q: "If an atom loses any of its electrons, _______ positively charged and can combine chemically with other atoms.", options: ["it has become", "it became", "it would become", "it becomes"], answer: 3, explanation: "일반적 과학 사실을 나타내는 조건문이므로 현재시제를 사용합니다." },
+            { q: "다음 밑줄 친 부분 중 어법상 틀린 것을 고르시오.<br><br>Interest in automatic data processing has grown (A)<u>rapid</u> since the first large calculators (B)<u>were introduced</u> (C)<u>in</u> (D)<u>1950</u>.", options: ["rapid", "were introduced", "in", "1950"], answer: 0, explanation: "동사 grow를 수식하는 부사가 필요하므로 rapidly로 고쳐야 합니다." },
+            { q: "다음 밑줄 친 부분 중 어법상 틀린 것을 고르시오.<br><br>Vaslav Nijinsky achieved world recognition as (A)<u>both</u> a dancer (B)<u>as well as</u> a (C)<u>choreographer</u> (D)<u>.</u>", options: ["both", "as well as", "choreographer", "."], answer: 1, explanation: "상관접속사 both A and B 구문이므로 as well as를 and로 고쳐야 합니다." },
+
+            // PDF 1 (문법 요점 총정리)
+            { q: "Each of international, political, and cultural forums _______ through the year at the new convention center.", options: ["are holding", "is holding", "are held", "is held"], answer: 3, explanation: "Each 뒤에 단수 동사를 써야 하고, 포럼이 개최되는 수동 관계이므로 is held가 맞습니다." },
+            { q: "Since the mid-1950s, the overall population of Canadian geese _______ greatly in North America.", options: ["increased", "increases", "has increased", "is increasing"], answer: 2, explanation: "Since 구문에 맞춰 주절은 현재완료(has increased) 시제가 와야 합니다." },
+            { q: "Neither Carl nor his colleagues _______ to the reception.", options: ["is inviting", "is invited", "were invited", "invited"], answer: 2, explanation: "B(his colleagues)에 맞춰 복수 동사를 쓰며 의미상 수동태이므로 were invited가 정답입니다." },
+            { q: "The lower the level of lighting in a room, _______ our eyes focus.", options: ["the more slowly", "more slowly", "it is more slow", "the slow"], answer: 0, explanation: "이중비교 문장(the 비교급, the 비교급)이므로 the more slowly를 써야 합니다." },
+            { q: "_______ the dinosaurs became extinct is not known.", options: ["Which", "Since", "How", "Although"], answer: 2, explanation: "문장의 주어 역할을 하는 명사절을 이끌면서 문맥에 맞는 접속사는 의문사 How입니다." },
+            { q: "No one knows what color dinosaurs were _______ no sample of their skin has survived.", options: ["because of", "because that", "it is because", "because"], answer: 3, explanation: "빈칸 뒤에 완전한 절(주어+동사)이 오므로 접속사 because를 씁니다." }
+        ];
+
+        let answeredCount = 0;
+
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function loadNewQuestions() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            answeredCount = 0;
+            updateScoreBoard();
+
+            const selectedQuestions = shuffle([...allQuestions]).slice(0, 10);
+            
+            selectedQuestions.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                
+                const qText = document.createElement('div');
+                qText.className = 'question-text';
+                qText.innerHTML = `<strong>${index + 1}.</strong> ${q.q}`;
+                card.appendChild(qText);
+                
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+                
+                const expDiv = document.createElement('div');
+                expDiv.className = 'explanation';
+                expDiv.innerHTML = `해설: ${q.explanation}`;
+                
+                let isAnswered = false;
+
+                q.options.forEach((opt, oIndex) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.innerHTML = `(${String.fromCharCode(65 + oIndex)}) ${opt}`;
+                    
+                    btn.onclick = () => {
+                        if (isAnswered) return;
+                        isAnswered = true;
+                        
+                        const buttons = optionsDiv.querySelectorAll('.option-btn');
+                        buttons.forEach(b => b.disabled = true);
+                        
+                        if (oIndex === q.answer) {
+                            btn.classList.add('correct');
+                        } else {
+                            btn.classList.add('incorrect');
+                            buttons[q.answer].classList.add('correct');
+                        }
+                        
+                        expDiv.style.display = 'block';
+                        answeredCount++;
+                        updateScoreBoard();
+                    };
+                    optionsDiv.appendChild(btn);
+                });
+                
+                card.appendChild(optionsDiv);
+                card.appendChild(expDiv);
+                container.appendChild(card);
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function updateScoreBoard() {
+            document.getElementById('score-board').textContent = `진행률: ${answeredCount} / 10`;
+        }
+
+        window.onload = loadNewQuestions;
+    </script>
+</body>
+</html>
 .btn-main { background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); transition: 0.3s; }
 .btn-main:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.4); }
 </style>
